@@ -53,9 +53,9 @@ class AutomationHandler(xbmc.Player): #Subclass of xbmc.Player so we can hear th
 			self.serialPort = serial.Serial()
 			self.serialPort.setPort(settings.getSetting("serialport") )
 			self.serialPort.setBaudrate(int(settings.getSetting("baudrate") ) )
-			self.serialPort.setByteSize(8)
-			self.serialPort.setParity('N')
-			self.serialPort.setStopbits(1)
+			self.serialPort.setByteSize(serial.EIGHTBITS)
+			self.serialPort.setParity(serial.PARITY_NONE)
+			self.serialPort.setStopbits(serial.STOPBITS_ONE)
 			self.serialPort.open()
 			xbmc.sleep(2000) #We pause a moment here because the Arduino reboots when the serial port is opened
 			self.sendCommand("on")
