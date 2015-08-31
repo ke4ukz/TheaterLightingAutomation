@@ -16,6 +16,7 @@
 
 __name__ = "Theater Lighting Automation" #Script name (also in addon.xml)
 __version__ = "1.0.0" #Script version (also in addon.xml)
+__author__ = "Jonathan Dean (ke4ukz@gmx.com)" #author information
 __addon_id__ = 'service.ke4ukz.theaterlightingautomation' #static ID string for this addon
 
 import serial #For communication over the serial port
