@@ -16,7 +16,7 @@
 		<description lang="en">This service allows for control of lights (and possibly other devices) by sending commands over a serial port when playback events occur.</description>
 		<platform>all</platform>
 		<language></language>
-		<license>GNU GENERAL PUBLIC LICENSE. Version 2, June 1991</license>
+		<license>GNU GENERAL PUBLIC LICENSE. Version 3, June 2007</license>
 		<forum></forum>
 		<website></website>
 		<source>https://github.com/ke4ukz/TheaterLightingAutomation.git</source>
