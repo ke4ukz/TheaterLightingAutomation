@@ -19,21 +19,25 @@ import xbmc #For most of what we do through Kodi
 import xbmcaddon #So we can get user-changable settings
 import xbmcgui #So we can show notification
 
+#Program information values
 __addonname__ = xbmcaddon.Addon().getAddonInfo("name")
 __version__ = xbmcaddon.Addon().getAddonInfo("version")
 __author__ = xbmcaddon.Addon().getAddonInfo("author")
 __addon_id__ = xbmcaddon.Addon().getAddonInfo("id")
 
+#Lighting modes
 MODE_NORMAL = 0
 MODE_PLAYING = 1
 MODE_PAUSED = 2
 MODE_SCREENSAVER = 3
 
-settings = xbmcaddon.Addon() #Settings object so we can access user-specified settings
+#Global objects and variables
+settings = xbmcaddon.Addon()
 serialPort = serial.Serial()
 currentMode = MODE_NORMAL
 
 def showNotification(header, message, time=4000, icon=xbmcgui.NOTIFICATION_INFO):
+	"""Show a notification dialog"""
 	xbmcgui.Dialog().notification(header, message, icon, time)
 
 def sendCommand(command):
@@ -47,12 +51,9 @@ def sendCommand(command):
 def addLogEntry(entry, loglevel=xbmc.LOGNOTICE):
 	"""Add a log entry to the Kodi log"""
 	xbmc.log(__addonname__ + ": " + entry, loglevel)
-#	if (loglevel == xbmc.LOGDEBUG):
-#		showNotification(__addonname__, entry, 1000)
 
 def fadeLights(channel, startlevel, endlevel):
 	"""Fades the lights on a specified channel using the appropriate method and duration"""
-	#addLogEntry("Fading from " + startlevel + " to " + endlevel, xbmc.LOGDEBUG)
 	startlevel = int(2.55 * int(startlevel))
 	endlevel = int(2.55 * int(endlevel))
 	duration = int(float(settings.getSetting("fadeduration"))* 1000)
@@ -66,7 +67,7 @@ def setLights(channel, level):
 	"""Sets the lights on a specified channel immediately to a given level"""
 	sendCommand("set " + channel + "," + str(int(2.55 * int(level))))
 
-class MonitorHandler(xbmc.Monitor):
+class MonitorHandler(xbmc.Monitor): #subclass of xbmc.Monitor so we can hear screensaver and settings change events
 	def __init__(self):
 		"""Initializes the Monitor object"""
 		xbmc.Monitor.__init__(self)
@@ -117,7 +118,6 @@ class MonitorHandler(xbmc.Monitor):
 			startlevel = "0"
 			endlevel = settings.getSetting("normalhousebrightness")
 			fadeLights(channel, startlevel, endlevel)
-
 		#aisle
 		if settings.getSetting("controlaislelighting") == "true":
 			#Fade from off to normal
@@ -146,30 +146,25 @@ class MonitorHandler(xbmc.Monitor):
 			currentMode = MODE_NORMAL
 			
 		if (currentMode == MODE_NORMAL):
-			#addLogEntry("Setting normal brightness", xbmc.LOGDEBUG)
 			#change brightness for normal
 			if (settings.getSetting("controlhouselighting") == "true"):
 				setLights(settings.getSetting("houselightingchannel"), settings.getSetting("normalhousebrightness"))
 			if (settings.getSetting("controlaislelighting") == "true"):
 				setLights(settings.getSetting("aislelightingchannel"), settings.getSetting("normalaislebrightness"))
 		elif (currentMode == MODE_PAUSED):
-			#addLogEntry("Setting paused brightness", xbmc.LOGDEBUG)
 			#change brightness for paused
 			if (settings.getSetting("controlhouselighting") == "true"):
 				setLights(settings.getSetting("houselightingchannel"), settings.getSetting("pausehousebrightness"))
 			if (settings.getSetting("controlaislelighting") == "true"):
 				setLights(settings.getSetting("aislelightingchannel"), settings.getSetting("pauseaislebrightness"))
 		elif (currentMode == MODE_PLAYING):
-			#addLogEntry("Setting playing brightness", xbmc.LOGDEBUG)
 			#change brightness for playing
 			if (settings.getSetting("controlhouselighting") == "true"):
 				setLights(settings.getSetting("houselightingchannel"), settings.getSetting("playhousebrightness"))
 			if (settings.getSetting("controlaislelighting") == "true"):
 				setLights(settings.getSetting("aislelightingchannel"), settings.getSetting("playaislebrightness"))
 		elif (currentMode == MODE_SCREENSAVER):
-			#addLogEntry("Setting screensaver brightness", xbmc.LOGDEBUG)
-			#change brightness for screensaver
-			#This shouldn't happen, since the screensaver should be off when settings are being changed
+			#change brightness for screensaver... this shouldn't happen, since the screensaver should be off when settings are being changed
 			if (settings.getSetting("controlhouselighting") == "true"):
 				setLights(settings.getSetting("houselightingchannel"), settings.getSetting("sshousebrightness"))
 			if (settings.getSetting("controlaislelighting") == "true"):
@@ -179,7 +174,6 @@ class MonitorHandler(xbmc.Monitor):
 		"""Called when the screen saver kicks in (from xbmc.Monitor)"""
 		global currentMode
 		#fade from normal to screensaver
-		#addLogEntry("Screensaver activated", xbmc.LOGDEBUG)
 		if (settings.getSetting("dimonscreensaver") == "true"):
 			#aisle
 			if settings.getSetting("controlaislelighting") == "true":
@@ -199,7 +193,6 @@ class MonitorHandler(xbmc.Monitor):
 		"""Called when the screensaver goes off (from xbmc.Monitor)"""
 		global currentMode
 		#fade from screensaver to normal
-		#addLogEntry("Screensaver deactivated", xbmc.LOGDEBUG)
 		if (settings.getSetting("dimonscreensaver") == "true"):
 			#house
 			if settings.getSetting("controlhouselighting") == "true":
