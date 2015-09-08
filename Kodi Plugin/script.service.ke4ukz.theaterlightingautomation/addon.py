@@ -71,7 +71,7 @@ def setLights(channel, level):
 	sendCommand("set " + channel + "," + str(int(2.55 * int(level))))
 
 def openPort():
-	"""Open the serial port"""
+	"""Open the serial port and initialize the lights"""
 	serialport = settings.getSetting("serialport")
 	baudrate = settings.getSetting("baudrate")
 	addLogEntry("Opening serial port " + serialport + "@" + baudrate, xbmc.LOGDEBUG)
@@ -88,6 +88,7 @@ def openPort():
 		serialPort.open()
 		addLogEntry("Serial port successfully opened", xbmc.LOGDEBUG)
 		xbmc.sleep(2000) #We pause a moment here because the Arduino reboots when the serial port is opened
+		initLights()
 	except Exception as e:
 		showNotification(__addonname__, settings.getLocalizedString(32000), icon=xbmcgui.NOTIFICATION_ERROR)
 		addLogEntry("Error opening serial port: " + str(e), xbmc.LOGERROR)
@@ -337,13 +338,12 @@ class AutomationHandler(xbmc.Player): #Subclass of xbmc.Player so we can hear th
 # -- Main Code ----------------------------------------------
 playerhandler = AutomationHandler()
 monitorhandler = MonitorHandler()
-if openPort(): #Only carry on if the serial port is opened
-	initLights() #Set lights to normal level
-	if monitorhandler.start(): #Start the monitor handler and only continue if it succeeds
-		if playerhandler.start(): #Only run if startup succeeds
-			while( True ): #Wait around for an abort signal from Kodi
-				if monitorhandler.waitForAbort(1):
-					break
-			playerhandler.stop()
-		monitorhandler.stop()
+if monitorhandler.start(): #Start the monitor handler and only continue if it succeeds
+	if playerhandler.start(): #Only run if startup succeeds
+		openPort()
+		while( True ): #Wait around for an abort signal from Kodi
+			if monitorhandler.waitForAbort(1):
+				break
+		playerhandler.stop()
+	monitorhandler.stop()
 	closePort()
