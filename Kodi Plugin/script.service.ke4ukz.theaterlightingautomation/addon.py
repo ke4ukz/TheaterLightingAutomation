@@ -43,10 +43,13 @@ def showNotification(header, message, time=4000, icon=xbmcgui.NOTIFICATION_INFO)
 def sendCommand(command):
 	"""Sends the given command over the serial port (appends a newline character to the command)"""
 	addLogEntry("Sending command '" + command + "'", xbmc.LOGDEBUG)
-	try:
-		serialPort.write(command + "\n")
-	except Exception as e:
-		addLogEntry('Error writing to serial port: ' + str(e) )
+	if serialPort.isOpen():
+		try:
+			serialPort.write(command + "\n")
+		except Exception as e:
+			addLogEntry('Error writing to serial port: ' + str(e), xbmc.LOGERROR)
+	else:
+		addLogEntry("Tried to write to closed serial port", xbmc.LOGWARNING)
 
 def addLogEntry(entry, loglevel=xbmc.LOGNOTICE):
 	"""Add a log entry to the Kodi log"""
@@ -67,6 +70,62 @@ def setLights(channel, level):
 	"""Sets the lights on a specified channel immediately to a given level"""
 	sendCommand("set " + channel + "," + str(int(2.55 * int(level))))
 
+def openPort():
+	"""Open the serial port"""
+	serialport = settings.getSetting("serialport")
+	baudrate = settings.getSetting("baudrate")
+	addLogEntry("Opening serial port " + serialport + "@" + baudrate, xbmc.LOGDEBUG)
+	if serialPort.isOpen():
+		addLogEntry("Tried to open already opened serial port", xbmc.LOGWARNING)
+		closePort()
+
+	try:
+		serialPort.setPort(serialport)
+		serialPort.setBaudrate(int(baudrate) )
+		serialPort.setByteSize(serial.EIGHTBITS)
+		serialPort.setParity(serial.PARITY_NONE)
+		serialPort.setStopbits(serial.STOPBITS_ONE)
+		serialPort.open()
+		addLogEntry("Serial port successfully opened", xbmc.LOGDEBUG)
+		xbmc.sleep(2000) #We pause a moment here because the Arduino reboots when the serial port is opened
+	except Exception as e:
+		showNotification(__addonname__, settings.getLocalizedString(32000), icon=xbmcgui.NOTIFICATION_ERROR)
+		addLogEntry("Error opening serial port: " + str(e), xbmc.LOGERROR)
+		return False
+	else:
+		return True
+
+def closePort():
+	"""Shut down the lights and close the serial port"""
+	if serialPort.isOpen():
+		try:
+			addLogEntry("Turning lights off", xbmc.LOGDEBUG)
+			sendCommand("alloff")
+			addLogEntry("Closing serial port", xbmc.LOGDEBUG)
+			serialPort.close()
+		except Exception as e:
+			addLogEntry("Error closing serial port: " + str(e), xbmc.LOGERROR)
+	else:
+		addLogEntry("Tried to close already closed serial port", xbmc.LOGWARNING)
+
+def initLights():
+	"""Initialize lighting to the normal levels"""
+	#house
+	if settings.getSetting("controlhouselighting") == "true":
+		#Fade from off to normal
+		channel = settings.getSetting("houselightingchannel")
+		startlevel = "0"
+		endlevel = settings.getSetting("normalhousebrightness")
+		fadeLights(channel, startlevel, endlevel)
+	#aisle
+	if settings.getSetting("controlaislelighting") == "true":
+		#Fade from off to normal
+		channel = settings.getSetting("aislelightingchannel")
+		startlevel = "0"
+		endlevel = settings.getSetting("normalaislebrightness")
+		fadeLights(channel, startlevel, endlevel)
+	currentMode = MODE_NORMAL
+
 class MonitorHandler(xbmc.Monitor): #subclass of xbmc.Monitor so we can hear screensaver and settings change events
 	def __init__(self):
 		"""Initializes the Monitor object"""
@@ -74,59 +133,13 @@ class MonitorHandler(xbmc.Monitor): #subclass of xbmc.Monitor so we can hear scr
 
 	def start(self):
 		"""Start up and open the serial port"""
-		addLogEntry("Monitor starting", xbmc.LOGDEBUG)
-		return self.openPort()
+		addLogEntry("Monitor Handler starting", xbmc.LOGDEBUG)
+		return True
 		
 	def stop(self):
 		"""Turn off the lights and close the serial port"""
-		addLogEntry("Monitor stopping", xbmc.LOGDEBUG)
-		try:
-			sendCommand("alloff")
-			addLogEntry("Closing serial port", xbmc.LOGDEBUG)
-			serialPort.close()
-		except Exception as e:
-			addLogEntry("Error closing serial port: " + str(e) )
+		addLogEntry("Monitor Handler stopping", xbmc.LOGDEBUG)
 		
-	def openPort(self):
-		"""Open the serial port"""
-		serialport = settings.getSetting("serialport")
-		baudrate = settings.getSetting("baudrate")
-		addLogEntry("Opening serial port " + serialport + "@" + baudrate, xbmc.LOGDEBUG)
-		try:
-			serialPort.setPort(serialport)
-			serialPort.setBaudrate(int(baudrate) )
-			serialPort.setByteSize(serial.EIGHTBITS)
-			serialPort.setParity(serial.PARITY_NONE)
-			serialPort.setStopbits(serial.STOPBITS_ONE)
-			serialPort.open()
-			addLogEntry("Serial port successfully opened", xbmc.LOGDEBUG)
-			xbmc.sleep(2000) #We pause a moment here because the Arduino reboots when the serial port is opened
-			self.initLights()
-		except Exception as e:
-			showNotification(__addonname__, settings.getLocalizedString(32000), icon=xbmcgui.NOTIFICATION_ERROR)
-			addLogEntry("Error opening serial port: " + str(e) )
-			return False
-		else:
-			return True
-
-	def initLights(self):
-		"""Initialize lighting to the normal levels"""
-		#house
-		if settings.getSetting("controlhouselighting") == "true":
-			#Fade from off to normal
-			channel = settings.getSetting("houselightingchannel")
-			startlevel = "0"
-			endlevel = settings.getSetting("normalhousebrightness")
-			fadeLights(channel, startlevel, endlevel)
-		#aisle
-		if settings.getSetting("controlaislelighting") == "true":
-			#Fade from off to normal
-			channel = settings.getSetting("aislelightingchannel")
-			startlevel = "0"
-			endlevel = settings.getSetting("normalaislebrightness")
-			fadeLights(channel, startlevel, endlevel)
-		currentMode = MODE_NORMAL
-
 	def onSettingsChanged(self):
 		"""Called when the addon settings have been changed (from xbmc.Monitor)"""
 		global currentMode
@@ -135,10 +148,10 @@ class MonitorHandler(xbmc.Monitor): #subclass of xbmc.Monitor so we can hear scr
 		if (serialPort.getPort() != settings.getSetting("serialport") ) or (serialPort.getBaudrate() != int(settings.getSetting("baudrate") ) ):
 			#Close the port and reopen it with the new settings
 			addLogEntry("Serial port settings changed, reopening port")
-			serialPort.close()
+			closePort()
 			xbmc.sleep(200) #wait a tick to make sure the port closed
-			if self.openPort():
-				self.initLights()
+			if openPort():
+				initLights()
 
 		if (settings.getSetting("dimonpause") == "false") and (currentMode == MODE_PAUSED):
 			currentMode = MODE_NORMAL
@@ -215,12 +228,12 @@ class AutomationHandler(xbmc.Player): #Subclass of xbmc.Player so we can hear th
 		
 	def start(self):
 		"""Initialize the serial port and turn on the lights"""
-		addLogEntry("Starting")
+		addLogEntry("Automation Handler starting")
 		return True
 
 	def stop(self):
 		"""Shut down"""
-		addLogEntry("Shutting down")
+		addLogEntry("Automation Handler stopping")
 
 	def onPlayBackStarted(self):
 		"""Called by Kodi when playback starts; set the lights level for video playback (from xbmc.Player)"""
@@ -324,10 +337,13 @@ class AutomationHandler(xbmc.Player): #Subclass of xbmc.Player so we can hear th
 # -- Main Code ----------------------------------------------
 playerhandler = AutomationHandler()
 monitorhandler = MonitorHandler()
-if monitorhandler.start(): #Start the monitor handler and only continue if it succeeds
-	if playerhandler.start(): #Only run if startup succeeds
-		while( True ):
-			if monitorhandler.waitForAbort(1):
-				break
-		playerhandler.stop()
+if openPort(): #Only carry on if the serial port is opened
+	initLights() #Set lights to normal level
+	if monitorhandler.start(): #Start the monitor handler and only continue if it succeeds
+		if playerhandler.start(): #Only run if startup succeeds
+			while( True ): #Wait around for an abort signal from Kodi
+				if monitorhandler.waitForAbort(1):
+					break
+			playerhandler.stop()
 		monitorhandler.stop()
+	closePort()
