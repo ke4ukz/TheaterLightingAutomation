@@ -14,15 +14,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-__name__ = "Theater Lighting Automation" #Script name (also in addon.xml)
-__version__ = "1.1.0" #Script version (also in addon.xml)
-__author__ = "Jonathan Dean (ke4ukz@gmx.com)" #author information
-__addon_id__ = 'script.service.ke4ukz.theaterlightingautomation' #static ID string for this addon
-
 import serial #For communication over the serial port
 import xbmc #For most of what we do through Kodi
 import xbmcaddon #So we can get user-changable settings
 import xbmcgui #So we can show notification
+
+__addonname__ = xbmcaddon.Addon().getAddonInfo("name")
+__version__ = xbmcaddon.Addon().getAddonInfo("version")
+__author__ = xbmcaddon.Addon().getAddonInfo("author")
+__addon_id__ = xbmcaddon.Addon().getAddonInfo("id")
 
 MODE_NORMAL = 0
 MODE_PLAYING = 1
@@ -46,9 +46,9 @@ def sendCommand(command):
 
 def addLogEntry(entry, loglevel=xbmc.LOGNOTICE):
 	"""Add a log entry to the Kodi log"""
-	xbmc.log(__name__ + ": " + entry, loglevel)
+	xbmc.log(__addonname__ + ": " + entry, loglevel)
 #	if (loglevel == xbmc.LOGDEBUG):
-#		showNotification(__name__, entry, 1000)
+#		showNotification(__addonname__, entry, 1000)
 
 def fadeLights(channel, startlevel, endlevel):
 	"""Fades the lights on a specified channel using the appropriate method and duration"""
@@ -102,7 +102,7 @@ class MonitorHandler(xbmc.Monitor):
 			xbmc.sleep(2000) #We pause a moment here because the Arduino reboots when the serial port is opened
 			self.initLights()
 		except Exception as e:
-			showNotification(__name__, settings.getLocalizedString(32000), icon=xbmcgui.NOTIFICATION_ERROR)
+			showNotification(__addonname__, settings.getLocalizedString(32000), icon=xbmcgui.NOTIFICATION_ERROR)
 			addLogEntry("Error opening serial port: " + str(e) )
 			return False
 		else:
