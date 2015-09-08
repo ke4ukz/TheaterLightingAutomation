@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+	<!-- General -->
+	<category label="30001">
+		<setting							type="lsep"		label="30002"																					/>
+		<setting id="serialport"			type="text"		label="30010"	default="/dev/ttyUSB0"															/>
+		<setting id="baudrate"				type="labelenum"	label="30011"	default="57600"	values="300|600|1200|2400|4800|9600|14400|19200|28800|38400|57600|115200"/>
+		<setting 							type="lsep"		label="30003"																					/>
+		<setting id="dimonpause"			type="bool"		label="30020"	default="true"																	/>
+		<setting id="dimonscreensaver"		type="bool"		label="30021"	default="true"																	/>
+		<setting id="fadeduration"			type="slider"	label="30022"	default="2000"									range="0,50,10000"	option="int"/>
+	</category>
+
+	<!-- Lighting -->
+	<category label="30100">
+		<!-- House Lighting -->
+		<setting							type="lsep"		label="30110"																					/>
+		<setting id="controlhouselighting"	type="bool"		label="30111"	default="true"																	/>
+		<setting id="houselightingchannel"	type="number"	label="30112"	default="0"				enable="eq(-1,true)"									/>
+		<setting id="normalhousebrightness"	type="slider"	label="30101"	default="100"			enable="eq(-2,true)"	range="0,100"	option="percent"/>
+		<setting id="playhousebrightness"	type="slider"	label="30102"	default="0"				enable="eq(-3,true)"	range="0,100"	option="percent"/>
+		<setting id="pausehousebrightness"	type="slider"	label="30103"	default="20"			enable="eq(-4,true)"	range="0,100"	option="percent"/>
+		<setting id="sshousebrightness"		type="slider"	label="30104"	default="60"			enable="eq(-5,true)"	range="0,100"	option="percent"/>
+	
+		<!-- Aisle Lighting -->
+		<setting							type="lsep"		label="30120"																					/>
+		<setting id="controlaislelighting"	type="bool"		label="30121"	default="true"																	/>
+		<setting id="aislelightingchannel"	type="number"	label="30122"	default="1"				enable="eq(-1,true)"									/>
+		<setting id="normalaislebrightness"	type="slider"	label="30101"	default="10"			enable="eq(-2,true)"	range="0,5,100"	option="percent"/>
+		<setting id="playaislebrightness"	type="slider"	label="30102"	default="40"			enable="eq(-3,true)"	range="0,5,100"	option="percent"/>
+		<setting id="pauseaislebrightness"	type="slider"	label="30103"	default="40"			enable="eq(-4,true)"	range="0,5,100"	option="percent"/>
+		<setting id="ssaislebrightness"		type="slider"	label="30104"	default="10"			enable="eq(-5,true)"	range="0,100"	option="percent"/>
+	</category>
+	
+	<!-- Testing -->
+	<category label="30200">
+		<setting id="runtest"				type="action"	label="30201"	action="RunScript(script.module.ke4ukz.theaterlightingtest)"						/>
+	</category>
+</settings>

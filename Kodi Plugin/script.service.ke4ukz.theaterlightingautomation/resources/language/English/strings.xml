@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+	<string id="30001">General Settings</string>
+	<string id="30002">Serial Port</string>
+	<string id="30003">Dim and Fade</string>
+	<string id="30010">Port Name</string>
+	<string id="30011">Baud Rate</string>
+	<string id="30020">Dim On Pauses</string>
+	<string id="30021">Dim On Screensaver</string>
+	<string id="30022">Fade Duration (ms)</string>
+
+	<string id="30100">Lighting</string>
+	<string id="30110">House Lighting</string>
+	<string id="30111">Control House Lighting</string>
+	<string id="30112">House Lighting Channel</string>
+	<string id="30120">Aisle Lighting</string>
+	<string id="30121">Control Aisle Lighting</string>
+	<string id="30122">Aisle Lighting Channel</string>
+	<string id="30101">Normal Brightness Level</string>
+	<string id="30102">Playing Brightness Level</string>
+	<string id="30103">Paused Brightness Level</string>
+	<string id="30104">Screensaver Brightness Level</string>
+	
+	<string id="30200">Testing</string>
+	<string id="30201">Run Levels Test</string>
+	
+	<string id="32000">Error opening serial port</string>
+</strings>

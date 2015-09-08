@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<strings>
-	<string id="30001">General Settings</string>
-	<string id="30010">Serial Port</string>
-	<string id="30011">Baud Rate</string>
-	
-	<string id="30020">Ignore pauses</string>
-</strings>
