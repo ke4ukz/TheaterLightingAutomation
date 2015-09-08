@@ -8,7 +8,7 @@
 		<setting 							type="lsep"		label="30003"																					/>
 		<setting id="dimonpause"			type="bool"		label="30020"	default="true"																	/>
 		<setting id="dimonscreensaver"		type="bool"		label="30021"	default="true"																	/>
-		<setting id="fadeduration"			type="slider"	label="30022"	default="2000"									range="0,50,10000"	option="int"/>
+		<setting id="fadeduration"			type="slider"	label="30022"	default="2	"									range="0,10"	option="float"	/>
 	</category>
 
 	<!-- Lighting -->

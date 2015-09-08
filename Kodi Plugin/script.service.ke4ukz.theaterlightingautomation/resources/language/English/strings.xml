@@ -7,7 +7,7 @@
 	<string id="30011">Baud Rate</string>
 	<string id="30020">Dim On Pauses</string>
 	<string id="30021">Dim On Screensaver</string>
-	<string id="30022">Fade Duration (ms)</string>
+	<string id="30022">Fade Duration (seconds)</string>
 
 	<string id="30100">Lighting</string>
 	<string id="30110">House Lighting</string>
