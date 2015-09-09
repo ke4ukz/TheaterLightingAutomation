@@ -21,6 +21,6 @@
 		<website></website>
 		<source>https://github.com/ke4ukz/TheaterLightingAutomation.git</source>
 		<email>ke4ukz@gmx.com</email>
-		<disclaimer></disclaimer>
+		<disclaimer>NOTE: Unplugging an Arduino while the serial port is opened will require both the computer and the Arduino to be restarted! Before you unplug the Arduino, you should disable this add-on to close the serial port.</disclaimer>
 	</extension>
 </addon>
