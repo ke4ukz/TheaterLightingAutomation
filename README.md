@@ -9,8 +9,7 @@ The protocol is designed to be used between the Arduino and a software program, 
 ### Changing pins and channels
 To modify the number of channels and which pin each channel points to, ensure that:
 * `NUM_CHANNELS` is correct
-* `values[]` has the right number of elements as dictated by `NUM_CHANNELS`
-* `channels[]` has the right number of elements as dictated by `NUM_CHANNELS`
+* `channels[]`, `values[]`, `fadeModes[]`, `startTimes[]`, `durations[]`, `aValues[]`, and `bValues[]` have the right number of elements as dictated by `NUM_CHANNELS`
 * each `channel[]` element points to a valid PWM pin
 
 ### Hardware
