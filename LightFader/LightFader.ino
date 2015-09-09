@@ -15,7 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
     
 #define __NAME__ "LightFader"
-#define __VERSION__ "1.0.0"
+#define __VERSION__ "1.0.1"
 
 #define NUM_CHANNELS 2
 
@@ -57,7 +57,7 @@ setChannel - Sets the PWM value for a channel
   Returns:         None
 ***************************************************************/
 void setChannel(int channel, int value) {
-  if (channel < NUM_CHANNELS) {
+  if ( (channel >=0) && (channel < NUM_CHANNELS) ) {
     analogWrite(channels[channel], value);
   }
 }
@@ -96,18 +96,20 @@ void linearFade(int channel, int from, int to, int time) {
   float m;
   unsigned long startTime, x;
   int y, b;
-  if ( (from != to) && (time > 0) ) {
-    m = (to - from) / (float)time;
-    b = from;
-    startTime = millis();
-    do {
-      x = millis() - startTime;
-      y = m * x + b;
-      analogWrite(channels[channel], y);
-    } while (x < time);
+  if ( (channel >=0) && (channel < NUM_CHANNELS) ) {
+    if ( (from != to) && (time > 0) ) {
+      m = (to - from) / (float)time;
+      b = from;
+      startTime = millis();
+      do {
+        x = millis() - startTime;
+        y = m * x + b;
+        analogWrite(channels[channel], y);
+      } while (x < time);
+    }
+    analogWrite(channels[channel], to);
+    values[channel] = to;
   }
-  analogWrite(channels[channel], to);
-  values[channel] = to;
 }
 
 /***************************************************************
@@ -126,18 +128,20 @@ void exponentialFade(int channel, int from, int to, int time) {
   double b;
   unsigned long startTime, x;
 
-  if ( (to > from) && (time > 0) ) {
-    a = from - 1;
-    b = pow( (to - from + 1),  (1 / (double)time) );
-    startTime = millis();
-    do {
-      x = millis() - startTime;
-      y = a + pow(b, x);
-      analogWrite(channels[channel], y);
-    } while (x < time);
+  if ( (channel >=0) && (channel < NUM_CHANNELS) ) {
+    if ( (to > from) && (time > 0) ) {
+      a = from - 1;
+      b = pow( (to - from + 1),  (1 / (double)time) );
+      startTime = millis();
+      do {
+        x = millis() - startTime;
+        y = a + pow(b, x);
+        analogWrite(channels[channel], y);
+      } while (x < time);
+    }
+    analogWrite(channels[channel], to);
+    values[channel] = to;
   }
-  analogWrite(channels[channel], to);
-  values[channel] = to;
 }
 
 /***************************************************************
@@ -156,19 +160,21 @@ void logarithmicFade(int channel, int from, int to, int time) {
   int a, y;
   float b;
   
-  if ( (to < from) && (time > 0) ) {
-    a = from;
-    b = (to - from) / log(time);
-    startTime = millis();
-    do {
-      x = millis() - startTime;
-      if (x != 0) {
-        y = a + b * log(x);
-        analogWrite(channels[channel], y);
-      }
-    } while (x < time);
-    analogWrite(channels[channel], to);
-    values[channel] = to;
+  if ( (channel >=0) && (channel < NUM_CHANNELS) ) {
+    if ( (to < from) && (time > 0) ) {
+      a = from;
+      b = (to - from) / log(time);
+      startTime = millis();
+      do {
+        x = millis() - startTime;
+        if (x != 0) {
+          y = a + b * log(x);
+          analogWrite(channels[channel], y);
+        }
+      } while (x < time);
+      analogWrite(channels[channel], to);
+      values[channel] = to;
+    }
   }
 }
 
