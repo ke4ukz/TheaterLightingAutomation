@@ -21,6 +21,6 @@
 		<website></website>
 		<source>https://github.com/ke4ukz/TheaterLightingAutomation.git</source>
 		<email>ke4ukz@gmx.com</email>
-		<disclaimer>The pyserial library must be installed for this add-on to function.</disclaimer>
+		<disclaimer></disclaimer>
 	</extension>
 </addon>
