@@ -1,3 +1,19 @@
+v1.2.6
+	Made startup and shutdown log messages occur at a more appropriate time
+v1.2.5
+	Treat DPMS mode as if the screensaver were on
+v1.2.4
+	Fixed "import serial" problem in Windows
+v1.2.3
+	Get playback/screensaver state at start so lights don't blink off and fade on
+v1.2.2
+	Service runs even if the serial port can't be opened initially
+v1.2.1
+	Restructured serial port handling
+v1.2.0
+	All program information (name, version, etc.) now stored in addon.xml exclusively
+	Changed "fadeduration" to seconds
+	Update lighting level immediately when settings are changed
 v1.1.0
 	Added dim on screensaver option
 v1.0.0
