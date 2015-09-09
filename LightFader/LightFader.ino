@@ -17,7 +17,7 @@
 *************************************************************************/
 
 #define __NAME__ "LightFader"
-#define __VERSION__ "1.1.0"
+#define __VERSION__ "1.1.1"
 
 #define HELPMESSAGE "Commands:\nhelp\nexponential channel,from,to,time\nlogarithmic channel,from,to,time\nlinear channel,from,to,time\nset channel,value\nget channel\nlist\nalloff\nUnambiguous abbreviations are also accepted"
       
@@ -27,14 +27,15 @@
 #define FADE_LOGARITHMIC 3
 
 #define NUM_CHANNELS 2
+byte channels[] = {3, 5}; //Arduino pin number for each channel
 
-byte channels[] = {3, 5};
-byte values[] = {0, 0};
-byte fadeModes[] = {0, 0};
-unsigned long startTimes[] = {0, 0};
-unsigned long durations[] = {0, 0};
-int aValues[] ={0, 0};
-float bValues[] = {0, 0};
+//These will all be zero-initialized and set to a size based on NUM_CHANNELS
+byte values[NUM_CHANNELS] = {0};
+byte fadeModes[NUM_CHANNELS] = {0};
+unsigned long startTimes[NUM_CHANNELS] = {0};
+unsigned long durations[NUM_CHANNELS] = {0};
+int aValues[NUM_CHANNELS] ={0};
+float bValues[NUM_CHANNELS] = {0};
 
 /***************************************************************
 splitInts - Splits a list of numbers separated by a given delimiter into an array of ints 
