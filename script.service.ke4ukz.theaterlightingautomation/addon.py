@@ -278,7 +278,7 @@ class AutomationHandler(xbmc.Player): #Subclass of xbmc.Player so we can hear th
 
 	def stop(self):
 		"""Shut down"""
-		addLogEntry("Automation Handler stopping", xmbc.LOGDEBUG)
+		addLogEntry("Automation Handler stopping", xbmc.LOGDEBUG)
 
 	def onPlayBackStarted(self):
 		"""Called by Kodi when playback starts; set the lights level for video playback (from xbmc.Player)"""
