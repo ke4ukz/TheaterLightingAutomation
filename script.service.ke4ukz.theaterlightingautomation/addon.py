@@ -19,14 +19,14 @@ import xbmcaddon #So we can get user-changable settings
 import xbmcgui #So we can show notification
 
 try:
-    #try to use the default pyserial
-    import serial
+	#try to use the default pyserial
+	import serial
 except:
-    #That didn't work, so we have to append our lib folder to the system search path in order to use libraries contained therein
-    import os
-    import sys
-    sys.path.append(os.path.join(xbmc.translatePath(xbmcaddon.Addon().getAddonInfo('path')) , 'resources', 'lib' ) )
-    import serial
+	#That didn't work, so we have to append our lib folder to the system search path in order to use libraries contained therein
+	import os
+	import sys
+	sys.path.append(os.path.join(xbmc.translatePath(xbmcaddon.Addon().getAddonInfo('path')) , 'resources', 'lib' ) )
+	import serial
 
 #Program information values
 __addonname__ = xbmcaddon.Addon().getAddonInfo("name")
