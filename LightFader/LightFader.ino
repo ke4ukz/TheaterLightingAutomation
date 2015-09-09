@@ -1,4 +1,5 @@
-/*  LightFader - Fades lights using various fading curves
+/*************************************************************************
+    LightFader - Fades lights using various fading curves
     Copyright (C) 2015 Jonathan Dean (ke4ukz@gmx.com)
 
     This program is free software: you can redistribute it and/or modify
@@ -12,8 +13,9 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
-    
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*************************************************************************/
+
 #define __NAME__ "LightFader"
 #define __VERSION__ "1.0.1"
 
