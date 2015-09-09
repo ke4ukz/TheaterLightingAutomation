@@ -26,14 +26,10 @@
 		<setting							type="lsep"		label="30120"																					/>
 		<setting id="controlaislelighting"	type="bool"		label="30121"	default="true"																	/>
 		<setting id="aislelightingchannel"	type="number"	label="30122"	default="1"				enable="eq(-1,true)"									/>
-		<setting id="normalaislebrightness"	type="slider"	label="30101"	default="10"			enable="eq(-2,true)"	range="0,5,100"	option="percent"/>
-		<setting id="playaislebrightness"	type="slider"	label="30102"	default="40"			enable="eq(-3,true)"	range="0,5,100"	option="percent"/>
-		<setting id="pauseaislebrightness"	type="slider"	label="30103"	default="40"			enable="eq(-4,true)"	range="0,5,100"	option="percent"/>
+		<setting id="normalaislebrightness"	type="slider"	label="30101"	default="10"			enable="eq(-2,true)"	range="0,100"	option="percent"/>
+		<setting id="playaislebrightness"	type="slider"	label="30102"	default="40"			enable="eq(-3,true)"	range="0,100"	option="percent"/>
+		<setting id="pauseaislebrightness"	type="slider"	label="30103"	default="40"			enable="eq(-4,true)"	range="0,100"	option="percent"/>
 		<setting id="ssaislebrightness"		type="slider"	label="30104"	default="10"			enable="eq(-5,true)"	range="0,100"	option="percent"/>
 	</category>
-	
-	<!-- Testing -->
-	<category label="30200">
-		<setting id="runtest"				type="action"	label="30201"	action="RunScript(script.module.ke4ukz.theaterlightingtest)"						/>
-	</category>
+
 </settings>
