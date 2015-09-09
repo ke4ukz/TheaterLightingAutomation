@@ -273,12 +273,12 @@ class AutomationHandler(xbmc.Player): #Subclass of xbmc.Player so we can hear th
 		
 	def start(self):
 		"""Initialize the serial port and turn on the lights"""
-		addLogEntry("Automation Handler starting")
+		addLogEntry("Automation Handler starting", xbmc.LOGDEBUG)
 		return True
 
 	def stop(self):
 		"""Shut down"""
-		addLogEntry("Automation Handler stopping")
+		addLogEntry("Automation Handler stopping", xmbc.LOGDEBUG)
 
 	def onPlayBackStarted(self):
 		"""Called by Kodi when playback starts; set the lights level for video playback (from xbmc.Player)"""
@@ -380,6 +380,8 @@ class AutomationHandler(xbmc.Player): #Subclass of xbmc.Player so we can hear th
 			currentMode = MODE_PLAYING
 
 # -- Main Code ----------------------------------------------
+addLogEntry("Started")
+
 playerhandler = AutomationHandler()
 monitorhandler = MonitorHandler()
 currentMode = getCurrentMode()
@@ -393,3 +395,5 @@ if monitorhandler.start(): #Start the monitor handler and only continue if it su
 		playerhandler.stop()
 	monitorhandler.stop()
 	closePort()
+
+addLogEntry("Stopped")

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon id="script.service.ke4ukz.theaterlightingautomation"
 	name="Theater Lighting Automation"
-	version="1.2.5"
+	version="1.2.6"
 	provider-name="Jonathan Dean">
 	<requires>
 		<import addon="xbmc.python" version="2.1.0"/>
