@@ -153,6 +153,22 @@ def initLights():
 		else:
 			endlevel = "0"
 		fadeLights(channel, startlevel, endlevel)
+	#ambient
+	if settings.getSetting("controlambientlighting") == "true":
+		#Fade from off to normal
+		channel = settings.getSetting("ambientlightingchannel")
+		startlevel = "0"
+		if currentMode == MODE_NORMAL:
+			endlevel = settings.getSetting("normalambientbrightness")
+		elif currentMode == MODE_PAUSED:
+			endlevel = settings.getSetting("pauseambientbrightness")
+		elif currentMode == MODE_PLAYING:
+			endlevel = settings.getSetting("playambientbrightness")
+		elif currentMode == MODE_SCREENSAVER:
+			endlevel = settings.getSetting("ssambientbrightness")
+		else:
+			endlevel = "0"
+		fadeLights(channel, startlevel, endlevel)
 	currentMode = MODE_NORMAL
 
 def getCurrentMode():
@@ -203,24 +219,32 @@ class MonitorHandler(xbmc.Monitor): #subclass of xbmc.Monitor so we can hear scr
 				setLights(settings.getSetting("houselightingchannel"), settings.getSetting("normalhousebrightness"))
 			if (settings.getSetting("controlaislelighting") == "true"):
 				setLights(settings.getSetting("aislelightingchannel"), settings.getSetting("normalaislebrightness"))
+			if (settings.getSetting("controlambientlighting") == "true"):
+				setLights(settings.getSetting("ambientlightingchannel"), settings.getSetting("normalambientbrightness"))
 		elif (currentMode == MODE_PAUSED):
 			#change brightness for paused
 			if (settings.getSetting("controlhouselighting") == "true"):
 				setLights(settings.getSetting("houselightingchannel"), settings.getSetting("pausehousebrightness"))
 			if (settings.getSetting("controlaislelighting") == "true"):
 				setLights(settings.getSetting("aislelightingchannel"), settings.getSetting("pauseaislebrightness"))
+			if (settings.getSetting("controlambientlighting") == "true"):
+				setLights(settings.getSetting("ambientlightingchannel"), settings.getSetting("pauseambientbrightness"))
 		elif (currentMode == MODE_PLAYING):
 			#change brightness for playing
 			if (settings.getSetting("controlhouselighting") == "true"):
 				setLights(settings.getSetting("houselightingchannel"), settings.getSetting("playhousebrightness"))
 			if (settings.getSetting("controlaislelighting") == "true"):
 				setLights(settings.getSetting("aislelightingchannel"), settings.getSetting("playaislebrightness"))
+			if (settings.getSetting("controlambientlighting") == "true"):
+				setLights(settings.getSetting("ambientlightingchannel"), settings.getSetting("playambientbrightness"))
 		elif (currentMode == MODE_SCREENSAVER):
 			#change brightness for screensaver... this shouldn't happen, since the screensaver should be off when settings are being changed
 			if (settings.getSetting("controlhouselighting") == "true"):
 				setLights(settings.getSetting("houselightingchannel"), settings.getSetting("sshousebrightness"))
 			if (settings.getSetting("controlaislelighting") == "true"):
 				setLights(settings.getSetting("aislelightingchannel"), settings.getSetting("ssaislebrightness"))
+			if (settings.getSetting("controlambientlighting") == "true"):
+				setLights(settings.getSetting("ambientlightingchannel"), settings.getSetting("ssambientbrightness"))
 
 	def onScreensaverActivated(self):
 		"""Called when the screen saver kicks in (from xbmc.Monitor)"""
@@ -238,6 +262,12 @@ class MonitorHandler(xbmc.Monitor): #subclass of xbmc.Monitor so we can hear scr
 				channel = settings.getSetting("houselightingchannel")
 				startlevel = settings.getSetting("normalhousebrightness")
 				endlevel = settings.getSetting("sshousebrightness")
+				fadeLights(channel, startlevel, endlevel)
+			#ambient
+			if settings.getSetting("controlambientlighting") == "true":
+				channel = settings.getSetting("ambientlightingchannel")
+				startlevel = settings.getSetting("normalambientbrightness")
+				endlevel = settings.getSetting("ssambientbrightness")
 				fadeLights(channel, startlevel, endlevel)
 			currentMode = MODE_SCREENSAVER
 
@@ -260,6 +290,12 @@ class MonitorHandler(xbmc.Monitor): #subclass of xbmc.Monitor so we can hear scr
 				channel = settings.getSetting("aislelightingchannel")
 				startlevel = settings.getSetting("ssaislebrightness")
 				endlevel = settings.getSetting("normalaislebrightness")
+				fadeLights(channel, startlevel, endlevel)
+			#ambient
+			if settings.getSetting("controlambientlighting") == "true":
+				channel = settings.getSetting("ambientlightingchannel")
+				startlevel = settings.getSetting("ssambientbrightness")
+				endlevel = settings.getSetting("normalambientbrightness")
 				fadeLights(channel, startlevel, endlevel)
 			currentMode = MODE_NORMAL
 
@@ -303,6 +339,12 @@ class AutomationHandler(xbmc.Player): #Subclass of xbmc.Player so we can hear th
 				startlevel = settings.getSetting("normalhousebrightness")
 				endlevel = settings.getSetting("playhousebrightness")
 				fadeLights(channel, startlevel, endlevel)
+			#ambient
+			if settings.getSetting("controlambientlighting") == "true":
+				channel = settings.getSetting("ambientlightingchannel")
+				startlevel = settings.getSetting("normalambientbrightness")
+				endlevel = settings.getSetting("playambientbrightness")
+				fadeLights(channel, startlevel, endlevel)
 			currentMode = MODE_PLAYING
 		
 	def onPlayBackEnded(self):
@@ -321,7 +363,6 @@ class AutomationHandler(xbmc.Player): #Subclass of xbmc.Player so we can hear th
 			else:
 				startlevel = settings.getSetting("playhousebrightness")
 			fadeLights(channel, startlevel, endlevel)
-
 		#aisle
 		if settings.getSetting("controlaislelighting") == "true":
 			channel = settings.getSetting("aislelightingchannel")
@@ -331,6 +372,16 @@ class AutomationHandler(xbmc.Player): #Subclass of xbmc.Player so we can hear th
 				startlevel = settings.getSetting("pauseaislebrightness")
 			else:
 				startlevel = settings.getSetting("playaislebrightness")
+			fadeLights(channel, startlevel, endlevel)
+		#ambient
+		if settings.getSetting("controlambientlighting") == "true":
+			channel = settings.getSetting("ambientlightingchannel")
+			endlevel = settings.getSetting("normalambientbrightness")
+			duration = settings.getSetting("fadeduration")
+			if (currentMode == MODE_PAUSED):
+				startlevel = settings.getSetting("pauseambientbrightness")
+			else:
+				startlevel = settings.getSetting("playambientbrightness")
 			fadeLights(channel, startlevel, endlevel)
 		currentMode = MODE_NORMAL
 		
@@ -358,13 +409,18 @@ class AutomationHandler(xbmc.Player): #Subclass of xbmc.Player so we can hear th
 				startlevel = settings.getSetting("playhousebrightness")
 				endlevel = settings.getSetting("pausehousebrightness")
 				fadeLights(channel, startlevel, endlevel)
+			#ambient
+			if settings.getSetting("controlambientlighting") == "true":
+				channel = settings.getSetting("ambientlightingchannel")
+				startlevel = settings.getSetting("playambientbrightness")
+				endlevel = settings.getSetting("pauseambientbrightness")
+				fadeLights(channel, startlevel, endlevel)
 
 	def onPlayBackResumed(self):
 		"""Called by Kodi when playback is resumed from paused; set the lights level for video playback (from xbmc.Player)"""
 		global currentMode
 		if (settings.getSetting("dimonpause") == "true"):
 			#fade from pause to play
-			
 			#house
 			if settings.getSetting("controlhouselighting") == "true":
 				channel = settings.getSetting("houselightingchannel")
@@ -376,6 +432,12 @@ class AutomationHandler(xbmc.Player): #Subclass of xbmc.Player so we can hear th
 				channel = settings.getSetting("aislelightingchannel")
 				startlevel = settings.getSetting("pauseaislebrightness")
 				endlevel = settings.getSetting("playaislebrightness")
+				fadeLights(channel, startlevel, endlevel)
+			#ambient
+			if settings.getSetting("controlambientlighting") == "true":
+				channel = settings.getSetting("ambientlightingchannel")
+				startlevel = settings.getSetting("pauseambientbrightness")
+				endlevel = settings.getSetting("playambientbrightness")
 				fadeLights(channel, startlevel, endlevel)
 			currentMode = MODE_PLAYING
 

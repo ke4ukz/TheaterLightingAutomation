@@ -16,6 +16,9 @@
 	<string id="30120">Aisle Lighting</string>
 	<string id="30121">Control Aisle Lighting</string>
 	<string id="30122">Aisle Lighting Channel</string>
+	<string id="30130">Ambient Lighting</string>
+	<string id="30131">Control Ambient Lighting</string>
+	<string id="30132">Ambient Lighting Channel</string>
 	<string id="30101">Normal Brightness Level</string>
 	<string id="30102">Playing Brightness Level</string>
 	<string id="30103">Paused Brightness Level</string>

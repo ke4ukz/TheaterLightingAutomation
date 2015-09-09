@@ -30,6 +30,14 @@
 		<setting id="playaislebrightness"	type="slider"	label="30102"	default="40"			enable="eq(-3,true)"	range="0,100"	option="percent"/>
 		<setting id="pauseaislebrightness"	type="slider"	label="30103"	default="40"			enable="eq(-4,true)"	range="0,100"	option="percent"/>
 		<setting id="ssaislebrightness"		type="slider"	label="30104"	default="10"			enable="eq(-5,true)"	range="0,100"	option="percent"/>
-	</category>
 
+		<!-- Ambient Lighting -->
+		<setting								type="lsep"		label="30130"																					/>
+		<setting id="controlambientlighting"	type="bool"		label="30131"	default="true"																	/>
+		<setting id="ambientlightingchannel"	type="number"	label="30132"	default="2"				enable="eq(-1,true)"									/>
+		<setting id="normalambientbrightness"	type="slider"	label="30101"	default="60"			enable="eq(-2,true)"	range="0,100"	option="percent"/>
+		<setting id="playambientbrightness"		type="slider"	label="30102"	default="20"			enable="eq(-3,true)"	range="0,100"	option="percent"/>
+		<setting id="pauseambientbrightness"	type="slider"	label="30103"	default="40"			enable="eq(-4,true)"	range="0,100"	option="percent"/>
+		<setting id="ssambientbrightness"		type="slider"	label="30104"	default="10"			enable="eq(-5,true)"	range="0,100"	option="percent"/>
+	</category>
 </settings>
