@@ -240,6 +240,9 @@ class MonitorHandler(xbmc.Monitor): #subclass of xbmc.Monitor so we can hear scr
 				endlevel = settings.getSetting("sshousebrightness")
 				fadeLights(channel, startlevel, endlevel)
 			currentMode = MODE_SCREENSAVER
+
+	def onDPMSActivated(self):
+		self.onScreensaverActivated()
 	
 	def onScreensaverDeactivated(self):
 		"""Called when the screensaver goes off (from xbmc.Monitor)"""
@@ -259,7 +262,10 @@ class MonitorHandler(xbmc.Monitor): #subclass of xbmc.Monitor so we can hear scr
 				endlevel = settings.getSetting("normalaislebrightness")
 				fadeLights(channel, startlevel, endlevel)
 			currentMode = MODE_NORMAL
-	
+
+	def onDPMSDeactivated(self):
+		self.onScreensaverDeactivated()
+			
 class AutomationHandler(xbmc.Player): #Subclass of xbmc.Player so we can hear the stop/play/pause/resume events
 	def __init__ (self):
 		"""Initializes the Player and Monitor objects"""
