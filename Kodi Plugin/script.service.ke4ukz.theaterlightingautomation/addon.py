@@ -111,21 +111,50 @@ def closePort():
 
 def initLights():
 	"""Initialize lighting to the normal levels"""
+	global currentMode
 	#house
 	if settings.getSetting("controlhouselighting") == "true":
 		#Fade from off to normal
 		channel = settings.getSetting("houselightingchannel")
 		startlevel = "0"
-		endlevel = settings.getSetting("normalhousebrightness")
+		if currentMode == MODE_NORMAL:
+			endlevel = settings.getSetting("normalhousebrightness")
+		elif currentMode == MODE_PAUSED:
+			endlevel = settings.getSetting("pausehousebrightness")
+		elif currentMode == MODE_PLAYING:
+			endlevel = settings.getSetting("playhousebrightness")
+		elif currentMode == MODE_SCREENSAVER:
+			endlevel = settings.getSetting("sshousebrightness")
+		else:
+			endlevel = "0"
 		fadeLights(channel, startlevel, endlevel)
 	#aisle
 	if settings.getSetting("controlaislelighting") == "true":
 		#Fade from off to normal
 		channel = settings.getSetting("aislelightingchannel")
 		startlevel = "0"
-		endlevel = settings.getSetting("normalaislebrightness")
+		if currentMode == MODE_NORMAL:
+			endlevel = settings.getSetting("normalaislebrightness")
+		elif currentMode == MODE_PAUSED:
+			endlevel = settings.getSetting("pauseaislebrightness")
+		elif currentMode == MODE_PLAYING:
+			endlevel = settings.getSetting("playaislebrightness")
+		elif currentMode == MODE_SCREENSAVER:
+			endlevel = settings.getSetting("ssaislebrightness")
+		else:
+			endlevel = "0"
 		fadeLights(channel, startlevel, endlevel)
 	currentMode = MODE_NORMAL
+
+def getCurrentMode():
+	if xbmc.getCondVisibility("System.ScreenSaverActive"):
+		return MODE_SCREENSAVER
+	elif xbmc.getCondVisibility("Player.Paused"):
+		return MODE_PAUSED
+	elif xbmc.getCondVisibility("Player.Seeking|Player.Caching|Player.Playing|Player.Forwarding|Player.Rewinding"):
+		return MODE_PLAYING
+	else:
+		return MODE_NORMAL
 
 class MonitorHandler(xbmc.Monitor): #subclass of xbmc.Monitor so we can hear screensaver and settings change events
 	def __init__(self):
@@ -338,6 +367,8 @@ class AutomationHandler(xbmc.Player): #Subclass of xbmc.Player so we can hear th
 # -- Main Code ----------------------------------------------
 playerhandler = AutomationHandler()
 monitorhandler = MonitorHandler()
+currentMode = getCurrentMode()
+
 if monitorhandler.start(): #Start the monitor handler and only continue if it succeeds
 	if playerhandler.start(): #Only run if startup succeeds
 		openPort()
