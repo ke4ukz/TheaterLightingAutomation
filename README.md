@@ -38,6 +38,3 @@ While designed to work on a Raspberry Pi running raspbmc or OSMC, there shouldn'
 * Playing lighting level for house and aisle
 * Paused lighting level for house and aisle
 * Screensaver lighting level for house and aisle
-
-### Problems
-On Windows I have to copy the pyserial library folder to the root folder of the add-on after it is installed. Without it, or with it placed in resources or resources/lib it won't be included successfully. While I'd like to fix this, it's not urgent since I'm designing it for a Raspberry Pi where `import serial` works fine.
