@@ -9,8 +9,10 @@ The protocol is designed to be used between the Arduino and a software program, 
 ### Changing pins and channels
 To modify the number of channels and which pin each channel points to, ensure that:
 * `NUM_CHANNELS` is correct
-* `channels[]`, `values[]`, `fadeModes[]`, `startTimes[]`, `durations[]`, `aValues[]`, and `bValues[]` have the right number of elements as dictated by `NUM_CHANNELS`
 * each `channel[]` element points to a valid PWM pin
+
+The arrays for `channels[]`, `values[]`, `fadeModes[]`, `startTimes[]`, `durations[]`, `aValues[]`, and `bValues[]` are automatically zero-initialized and have elements as dictated by `NUM_CHANNELS`
+
 
 ### Hardware
 The hardware configuration for physically connecting to lighting can be simple or complicated. For testing, a simple resistor and LED work well. For LED strips or most other LED lighting a moderate transistor (e.g. Darlington, MOSFET) must be used. For other lighting such as incandescents more complicated circuits with triacs and diacs need to be assembled.
@@ -23,17 +25,17 @@ More info about using MOSFETs as switches can be found [here](http://www.electro
 
 ## Kodi Add-on (script.service.ke4ukz.theaterlightingautomation)
 This service allows for control of lights (and possibly other devices) by sending commands over a serial port when playback events occur.
-Almost all parameters are user-configurable, from whether or not to even fade to the fade duration and lighting levels. Currently two lighting channels can be controlled (house and aisle), but this may be expanded to three to include an ambient/mood lighting channel.
-While designed to work on a Raspberry Pi running raspbmc or OSMC, there shouldn't be any reason it won't work on other systems as well.
+Almost all parameters are user-configurable, from whether or not to even fade to the fade duration and lighting levels. Currently three lighting channels can be controlled: house, aisle, and ambient.
+While designed to work on a Raspberry Pi running raspbmc or OSMC, there shouldn't be any reason it won't work on other systems as well (I do my testing on Kodi 14.2 on Windows 7).
 
 ### Configurable Settings (in Kodi)
 * Serial port and speed
 * Dim on pause
 * Dim on screensaver
 * Fade duration
-* Independent selection for controlling house and aisle lighting
-* Light channel for each house and aisle
-* Normal lighting level for house and aisle
-* Playing lighting level for house and aisle
-* Paused lighting level for house and aisle
-* Screensaver lighting level for house and aisle
+* Independent selection for controlling house, aisle, and ambient lighting
+* Light channel for each house, aisle, and ambient
+* Normal lighting level for house, aisle, and ambient
+* Playing lighting level for house, aisle, and ambient
+* Paused lighting level for house, aisle, and ambient
+* Screensaver lighting level for house, aisle, and ambient
