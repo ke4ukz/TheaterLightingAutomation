@@ -17,7 +17,7 @@
 *************************************************************************/
 
 #define __NAME__ "LightFader"
-#define __VERSION__ "1.1.1"
+#define __VERSION__ "1.1.2"
 
 #define HELPMESSAGE "Commands:\nhelp\nexponential channel,from,to,time\nlogarithmic channel,from,to,time\nlinear channel,from,to,time\nset channel,value\nget channel\nlist\nalloff\nUnambiguous abbreviations are also accepted"
       
@@ -26,8 +26,8 @@
 #define FADE_EXPONENTIAL 2
 #define FADE_LOGARITHMIC 3
 
-#define NUM_CHANNELS 2
-byte channels[] = {3, 5}; //Arduino pin number for each channel
+#define NUM_CHANNELS 3
+byte channels[] = {3, 5, 6}; //Arduino pin number for each channel
 
 //These will all be zero-initialized and set to a size based on NUM_CHANNELS
 byte values[NUM_CHANNELS] = {0};
