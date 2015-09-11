@@ -1,3 +1,5 @@
+v1.4.0
+	Added support for blackout times
 v1.3.0
 	Added third lighting channel for ambient lighting
 v1.2.6

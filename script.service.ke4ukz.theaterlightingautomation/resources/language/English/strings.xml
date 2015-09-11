@@ -24,8 +24,12 @@
 	<string id="30103">Paused Brightness Level</string>
 	<string id="30104">Screensaver Brightness Level</string>
 	
-	<string id="30200">Testing</string>
-	<string id="30201">Run Levels Test</string>
+	<string id="30200">Blackout</string>
+	<string id="30201">Start Time</string>
+	<string id="30202">End Time</string>
+	<string id="30203">Black Out House Lighting</string>
+	<string id="30204">Black Out Aisle Lighting</string>
+	<string id="30205">Black Out Ambient Lighting</string>
 	
 	<string id="32000">Error opening serial port</string>
 </strings>

@@ -40,4 +40,14 @@
 		<setting id="pauseambientbrightness"	type="slider"	label="30103"	default="40"			enable="eq(-4,true)"	range="0,100"	option="percent"/>
 		<setting id="ssambientbrightness"		type="slider"	label="30104"	default="10"			enable="eq(-5,true)"	range="0,100"	option="percent"/>
 	</category>
+	
+	<!-- Blackout -->
+	<category label="30200">
+		<setting id="startblackouttime"			type="time"		label="30201"	default="23:00"																	/>
+		<setting id="endblackouttime"			type="time"		label="30202"	default="07:00"																	/>
+		<setting id="blackouthouse"				type="bool"		label="30203"	default="false"																	/>
+		<setting id="blackoutaisle"				type="bool"		label="30204"	default="false"																	/>
+		<setting id="blackoutambient"			type="bool"		label="30205"	default="false"																	/>
+	</category>
+	
 </settings>
