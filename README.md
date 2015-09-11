@@ -16,12 +16,13 @@ The arrays for `channels[]`, `values[]`, `fadeModes[]`, `startTimes[]`, `duratio
 
 ### Hardware
 The hardware configuration for physically connecting to lighting can be simple or complicated. For testing, a simple resistor and LED work well. For LED strips or most other LED lighting a moderate transistor (e.g. Darlington, MOSFET) must be used. For other lighting such as incandescents more complicated circuits with triacs and diacs need to be assembled.
-In my setup I use [FQP30N06L N-channel MOSFETs](http://www.mouser.com/Search/ProductDetail.aspx?R=FQP30N06LvirtualkeyFQP30N06Lvirtualkey512-FQP30N06L) to allow me to use the 5-volt PWM signal to dim a 12-volt power source. These transistors are good for 32 amps and 79 watts, so each one should be able to dim a LOT of LEDs!
-Here is an example circuit for a single channel:
+In my setup I use two [FQP30N06L N-channel MOSFETs](http://www.mouser.com/Search/ProductDetail.aspx?R=FQP30N06LvirtualkeyFQP30N06Lvirtualkey512-FQP30N06L) and one [TIP120 NPN Darlington array](http://www.mouser.com/ProductDetail/STMicroelectronics/TIP120/?qs=ljbEvF4DwOPl3O93r6IAPg%3D%3D) to allow me to use the 5-volt PWM signal to dim a 12-volt power source. The MOSFETs are good for 32 amps and 79 watts, and the Darlington is 5 amps and 65 watts, so each one should be able to dim a LOT of LEDs!
+Here are a couple example circuits for a single channel:
 
-![Single Channel Circuit Example](circuit.png)
+![Single Channel Circuit Example with N-channel MOSFET](circuit.png)
+![Single Channel Circuit Example with NPN Darlington](circuit2.png)
 
-More info about using MOSFETs as switches can be found [here](http://www.electronics-tutorials.ws/transistor/tran_7.html).
+More info about using MOSFETs as switches can be found [here](http://www.electronics-tutorials.ws/transistor/tran_7.html). Remember that if you're using an inductive load instead of LEDs (like, say, controlling a cooling fan) you'll need to put a flyback diode in parallel with it.
 
 ## Kodi Add-on (script.service.ke4ukz.theaterlightingautomation)
 This service allows for control of lights (and possibly other devices) by sending commands over a serial port when playback events occur.
