@@ -1,3 +1,5 @@
+v1.4.1
+	Loading serial library is more robust
 v1.4.0
 	Added support for blackout times
 v1.3.0

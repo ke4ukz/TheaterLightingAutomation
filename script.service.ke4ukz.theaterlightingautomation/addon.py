@@ -18,21 +18,35 @@ import xbmc #For most of what we do through Kodi
 import xbmcaddon #So we can get user-changable settings
 import xbmcgui #So we can show notification
 
-try:
-	#try to use the default pyserial
-	import serial
-except:
-	#That didn't work, so we have to append our lib folder to the system search path in order to use libraries contained therein
-	import os
-	import sys
-	sys.path.append(os.path.join(xbmc.translatePath(xbmcaddon.Addon().getAddonInfo('path')) , 'resources', 'lib' ) )
-	import serial
-
 #Program information values
 __addonname__ = xbmcaddon.Addon().getAddonInfo("name")
 __version__ = xbmcaddon.Addon().getAddonInfo("version")
 __author__ = xbmcaddon.Addon().getAddonInfo("author")
 __addon_id__ = xbmcaddon.Addon().getAddonInfo("id")
+
+def showNotification(header, message, time=4000, icon=xbmcgui.NOTIFICATION_INFO):
+	"""Show a notification dialog"""
+	xbmcgui.Dialog().notification(header, message, icon, time)
+
+def addLogEntry(entry, loglevel=xbmc.LOGNOTICE):
+	"""Add a log entry to the Kodi log"""
+	xbmc.log(__addonname__ + ": " + entry, loglevel)
+
+#Import a serial library from somewhere
+try:
+	#try to use the default pyserial
+	import serial
+except:
+	addLogEntry("Default serial library not found, attempting to use included version", xbmc.LOGWARNING)
+	try:
+		import os
+		import sys
+		sys.path.append(os.path.join(xbmc.translatePath(xbmcaddon.Addon().getAddonInfo('path')) , 'resources', 'lib' ) )
+		import serial
+	except:
+		showNotification(__addonname__, "Unable to load serial library", icon=xbmcgui.NOTIFICATION_ERROR)
+		addLogEntry("Unable to load any serial library, sorry", xbmc.LOGFATAL)
+		exit()
 
 #Lighting modes
 MODE_NORMAL = 0
@@ -44,10 +58,6 @@ MODE_SCREENSAVER = 3
 settings = xbmcaddon.Addon()
 serialPort = serial.Serial()
 
-def showNotification(header, message, time=4000, icon=xbmcgui.NOTIFICATION_INFO):
-	"""Show a notification dialog"""
-	xbmcgui.Dialog().notification(header, message, icon, time)
-
 def sendCommand(command):
 	"""Sends the given command over the serial port (appends a newline character to the command)"""
 	addLogEntry("Sending command '" + command + "'", xbmc.LOGDEBUG)
@@ -58,10 +68,6 @@ def sendCommand(command):
 			addLogEntry('Error writing to serial port: ' + str(e), xbmc.LOGERROR)
 	else:
 		addLogEntry("Tried to write to closed serial port", xbmc.LOGWARNING)
-
-def addLogEntry(entry, loglevel=xbmc.LOGNOTICE):
-	"""Add a log entry to the Kodi log"""
-	xbmc.log(__addonname__ + ": " + entry, loglevel)
 
 def fadeLights(channel, startlevel, endlevel):
 	"""Fades the lights on a specified channel using the appropriate method and duration"""
