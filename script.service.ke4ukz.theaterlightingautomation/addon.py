@@ -53,10 +53,12 @@ MODE_NORMAL = 0
 MODE_PLAYING = 1
 MODE_PAUSED = 2
 MODE_SCREENSAVER = 3
+modeNames = ["Idle", "Playing", "Paused", "Screensaver"]
 
-#Global objects
+#Global objects and variables
 settings = xbmcaddon.Addon()
 serialPort = serial.Serial()
+currentMode = MODE_NORMAL
 
 def sendCommand(command):
 	"""Sends the given command over the serial port (appends a newline character to the command)"""
@@ -138,6 +140,9 @@ def isDuringBlackout(whichLight=""):
 
 def initLights():
 	"""Initialize lighting to the normal levels"""
+	global currentMode
+	#Base the current mode on what the player is doing
+	
 	currentMode = getCurrentMode()
 	#house
 	if (settings.getSetting("controlhouselighting") == "true"):
@@ -227,6 +232,8 @@ class MonitorHandler(xbmc.Monitor): #subclass of xbmc.Monitor so we can hear scr
 
 	def onSettingsChanged(self):
 		"""Called when the addon settings have been changed (from xbmc.Monitor)"""
+		global currentMode
+		#Base the current mode on what the player is currently doing
 		currentMode = getCurrentMode()
 		addLogEntry("Settings changed", xbmc.LOGDEBUG)
 		#See if the serial port has been changed
@@ -280,7 +287,6 @@ class MonitorHandler(xbmc.Monitor): #subclass of xbmc.Monitor so we can hear scr
 			if (settings.getSetting("controlhouselighting") == "true"):
 				if not isDuringBlackout("house"):
 					houselevel = settings.getSetting("playhousebrightness")
-					showNotification(__addonname__, "Retrieved play house brightness: " + houselevel, 1000)
 				else:
 					houselevel = "0"
 			if (settings.getSetting("controlaislelighting") == "true"):
@@ -317,7 +323,9 @@ class MonitorHandler(xbmc.Monitor): #subclass of xbmc.Monitor so we can hear scr
 
 	def onScreensaverActivated(self):
 		"""Called when the screen saver kicks in (from xbmc.Monitor)"""
-		currentMode = getCurrentMode()
+		global currentMode
+		addLogEntry("onScreensaverActivated", xbmc.LOGDEBUG)
+		addLogEntry("Current Mode: " + modeNames[currentMode], xbmc.LOGDEBUG)
 		#fade from normal to screensaver
 		if (settings.getSetting("dimonscreensaver") == "true"):
 			#aisle
@@ -338,13 +346,16 @@ class MonitorHandler(xbmc.Monitor): #subclass of xbmc.Monitor so we can hear scr
 				startlevel = settings.getSetting("normalambientbrightness")
 				endlevel = settings.getSetting("ssambientbrightness")
 				fadeLights(channel, startlevel, endlevel)
+		currentMode = MODE_SCREENSAVER
 
 	def onDPMSActivated(self):
 		self.onScreensaverActivated()
 
 	def onScreensaverDeactivated(self):
 		"""Called when the screensaver goes off (from xbmc.Monitor)"""
-		currentMode = getCurrentMode()
+		global currentMode
+		addLogEntry("onScreensaverDectivated", xbmc.LOGDEBUG)
+		addLogEntry("Current Mode: " + modeNames[currentMode], xbmc.LOGDEBUG)
 		#fade from screensaver to normal
 		if (settings.getSetting("dimonscreensaver") == "true"):
 			#house
@@ -365,6 +376,7 @@ class MonitorHandler(xbmc.Monitor): #subclass of xbmc.Monitor so we can hear scr
 				startlevel = settings.getSetting("ssambientbrightness")
 				endlevel = settings.getSetting("normalambientbrightness")
 				fadeLights(channel, startlevel, endlevel)
+		currentMode = MODE_NORMAL
 
 	def onDPMSDeactivated(self):
 		self.onScreensaverDeactivated()
@@ -385,9 +397,9 @@ class AutomationHandler(xbmc.Player): #Subclass of xbmc.Player so we can hear th
 
 	def onPlayBackStarted(self):
 		"""Called by Kodi when playback starts; set the lights level for video playback (from xbmc.Player)"""
-		currentMode = getCurrentMode()
+		global currentMode
 		addLogEntry("onPlayBackStarted", xbmc.LOGDEBUG)
-		addLogEntry("Current Mode: " + str(currentMode), xbmc.LOGDEBUG)
+		addLogEntry("Current Mode: " + modeNames[currentMode], xbmc.LOGDEBUG)
 		
 		if currentMode==MODE_PAUSED:
 			#fade from pause to play
@@ -412,12 +424,13 @@ class AutomationHandler(xbmc.Player): #Subclass of xbmc.Player so we can hear th
 				startlevel = settings.getSetting("normalambientbrightness")
 				endlevel = settings.getSetting("playambientbrightness")
 				fadeLights(channel, startlevel, endlevel)
+		currentMode = MODE_PLAYING
 
 	def onPlayBackEnded(self):
 		"""Called by Kodi when playback ends; Set the lights level to normal (from xbmc.Player)"""
-		currentMode = getCurrentMode()
+		global currentMode
 		addLogEntry("onPlayBackEnded", xbmc.LOGDEBUG)
-		addLogEntry("Current Mode: " + str(currentMode), xbmc.LOGDEBUG)
+		addLogEntry("Current Mode: " + modeNames[currentMode], xbmc.LOGDEBUG)
 		#fade from play to normal
 		#house
 		if (settings.getSetting("controlhouselighting") == "true") and (not isDuringBlackout("house") ):
@@ -449,6 +462,7 @@ class AutomationHandler(xbmc.Player): #Subclass of xbmc.Player so we can hear th
 			else:
 				startlevel = settings.getSetting("playambientbrightness")
 			fadeLights(channel, startlevel, endlevel)
+		currentMode = MODE_NORMAL
 
 	def onPlayBackStopped(self):
 		"""Called by Kodi when the user stops playback; set the lights level to normal (from xbmc.Player)"""
@@ -457,8 +471,9 @@ class AutomationHandler(xbmc.Player): #Subclass of xbmc.Player so we can hear th
 
 	def onPlayBackPaused(self):
 		"""Called by Kodi when playback is paused; set the lights level to dim (from xbmc.Player)"""
-		currentMode = getCurrentMode()
+		global currentMode
 		addLogEntry("onPlayBackPaused", xbmc.LOGDEBUG)
+		addLogEntry("Current Mode: " + modeNames[currentMode], xbmc.LOGDEBUG)
 		if (settings.getSetting("dimonpause") == "true"):
 			#fade from play to paused
 			#aisle
@@ -479,10 +494,13 @@ class AutomationHandler(xbmc.Player): #Subclass of xbmc.Player so we can hear th
 				startlevel = settings.getSetting("playambientbrightness")
 				endlevel = settings.getSetting("pauseambientbrightness")
 				fadeLights(channel, startlevel, endlevel)
+		currentMode = MODE_PAUSED
 
 	def onPlayBackResumed(self):
 		"""Called by Kodi when playback is resumed from paused; set the lights level for video playback (from xbmc.Player)"""
-		currentMode = getCurrentMode()
+		global currentMode
+		addLogEntry("onPlayBackResumed", xbmc.LOGDEBUG)
+		addLogEntry("Current Mode: " + modeNames[currentMode], xbmc.LOGDEBUG)
 		if (settings.getSetting("dimonpause") == "true"):
 			#fade from pause to play
 			#house
@@ -503,6 +521,7 @@ class AutomationHandler(xbmc.Player): #Subclass of xbmc.Player so we can hear th
 				startlevel = settings.getSetting("pauseambientbrightness")
 				endlevel = settings.getSetting("playambientbrightness")
 				fadeLights(channel, startlevel, endlevel)
+		currentMode = MODE_PLAYING
 
 # -- Main Code ----------------------------------------------
 addLogEntry("Started")
