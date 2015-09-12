@@ -59,6 +59,7 @@ modeNames = ["Idle", "Playing", "Paused", "Screensaver"]
 settings = xbmcaddon.Addon()
 serialPort = serial.Serial()
 currentMode = MODE_NORMAL
+blackedOut = False
 
 def sendCommand(command):
 	"""Sends the given command over the serial port (appends a newline character to the command)"""
@@ -126,6 +127,9 @@ def closePort():
 		addLogEntry("Tried to close already closed serial port", xbmc.LOGWARNING)
 
 def isDuringBlackout(whichLight=""):
+	"""Check to see if a given channel should be blacked out (based on user preferences and time).
+	If no channel is specified, returns if the time is during the blackout period.
+	"""
 	startBlackoutTime = settings.getSetting("startblackouttime")
 	endBlackoutTime = settings.getSetting("endblackouttime")
 	if (xbmc.getCondVisibility("System.Time(" + startBlackoutTime + ", " + endBlackoutTime + ")") ):
@@ -138,12 +142,54 @@ def isDuringBlackout(whichLight=""):
 				return True
 	return False
 
+def handleBlackOut():
+	"""Turn the lights off or on based on blackout time and user preferences"""
+	global blackedOut
+	houselevel = ""
+	aislelevel = ""
+	ambientlevel = ""
+	if currentMode == MODE_NORMAL:
+		houselevel = settings.getSetting("normalhousebrightness")
+		aislelevel = settings.getSetting("normalaislebrightness")
+		ambientlevel = settings.getSetting("normalambientbrightness")
+	elif currentMode == MODE_PLAYING:
+		houselevel = settings.getSetting("playhousebrightness")
+		aislelevel = settings.getSetting("playaislebrightness")
+		ambientlevel = settings.getSetting("playambientbrightness")
+	elif currentMode == MODE_PAUSED:
+		houselevel = settings.getSetting("pausehousebrightness")
+		aislelevel = settings.getSetting("pauseaislebrightness")
+		ambientlevel = settings.getSetting("pauseambientbrightness")
+	elif currentMode == MODE_SCREENSAVER:
+		houselevel = settings.getSetting("sshousebrightness")
+		aislelevel = settings.getSetting("ssaislebrightness")
+		ambientlevel = settings.getSetting("ssambientbrightness")
+
+	if isDuringBlackout():
+		addLogEntry("Blacking out lights")
+		if (settings.getSetting("blackouthouse") == "true") and (settings.getSetting("controlhouselighting") == "true"):
+			fadeLights(settings.getSetting("houselightingchannel"), houselevel, "0")
+		if (settings.getSetting("blackoutaisle") == "true") and (settings.getSetting("controlaislelighting") == "true"):
+			fadeLights(settings.getSetting("aislelightingchannel"), aislelevel, "0")
+		if (settings.getSetting("blackoutambient") == "true") and (settings.getSetting("controlambientlighting") == "true"):
+			fadeLights(settings.getSetting("ambientlightingchannel"), ambientlevel, "0")
+		blackedOut = True
+	else:
+		addLogEntry("Blackout period over")
+		if (settings.getSetting("blackouthouse") == "true") and (settings.getSetting("controlhouselighting") == "true"):
+			fadeLights(settings.getSetting("houselightingchannel"), "0", houselevel)
+		if (settings.getSetting("blackoutaisle") == "true") and (settings.getSetting("controlaislelighting") == "true"):
+			fadeLights(settings.getSetting("aislelightingchannel"), "0", aislelevel)
+		if (settings.getSetting("blackoutambient") == "true") and (settings.getSetting("controlambientlighting") == "true"):
+			fadeLights(settings.getSetting("ambientlightingchannel"), "0", ambientlevel)
+		blackedOut = False
+
 def initLights():
 	"""Initialize lighting to the normal levels"""
 	global currentMode
 	#Base the current mode on what the player is doing
-	
 	currentMode = getCurrentMode()
+	blackedOut = isDuringBlackout()
 	#house
 	if (settings.getSetting("controlhouselighting") == "true"):
 		#Fade from off to normal
@@ -179,8 +225,6 @@ def initLights():
 				endlevel = settings.getSetting("playaislebrightness")
 			elif currentMode == MODE_SCREENSAVER:
 				endlevel = settings.getSetting("ssaislebrightness")
-			elif (currentMode == MODE_BLACKOUT) and (settings.getSetting("blackoutaisle") == "true"):
-				endlevel = "0"
 			else:
 				endlevel = "0"
 		fadeLights(channel, startlevel, endlevel)
@@ -200,8 +244,6 @@ def initLights():
 				endlevel = settings.getSetting("playambientbrightness")
 			elif currentMode == MODE_SCREENSAVER:
 				endlevel = settings.getSetting("ssambientbrightness")
-			elif (currentMode == MODE_BLACKOUT) and (settings.getSetting("blackoutambient") == "true"):
-				endlevel = "0"
 			else:
 				endlevel = "0"
 		fadeLights(channel, startlevel, endlevel)
@@ -235,6 +277,7 @@ class MonitorHandler(xbmc.Monitor): #subclass of xbmc.Monitor so we can hear scr
 		global currentMode
 		#Base the current mode on what the player is currently doing
 		currentMode = getCurrentMode()
+		blackedOut = isDuringBlackout()
 		addLogEntry("Settings changed", xbmc.LOGDEBUG)
 		#See if the serial port has been changed
 		if (serialPort.getPort() != settings.getSetting("serialport") ) or (serialPort.getBaudrate() != int(settings.getSetting("baudrate") ) ):
@@ -245,81 +288,71 @@ class MonitorHandler(xbmc.Monitor): #subclass of xbmc.Monitor so we can hear scr
 			if openPort():
 				initLights()
 
-				houselevel = "0"
-		aislelevel = "0"
-		ambientlevel = "0"
+		houselevel = ""
+		aislelevel = ""
+		ambientlevel = ""
 		if (currentMode == MODE_NORMAL):
 			#change brightness for normal
-			if (settings.getSetting("controlhouselighting") == "true"):
-				if not isDuringBlackout("house"):
-					houselevel = settings.getSetting("normalhousebrightness")
-				else:
-					houselevel = "0"
-			if (settings.getSetting("controlaislelighting") == "true"):
-				if not isDuringBlackout("aisle"):
-					aislelevel = settings.getSetting("normalaislebrightness")
-				else:
-					aislelevle = "0"
-			if (settings.getSetting("controlambientlighting") == "true"):
-				if not isDuringBlackout("ambient"):
-					ambientlevel = settings.getSetting("normalambientbrightness")
-				else:
-					ambientlevel = "0"
+			if not isDuringBlackout("house"):
+				houselevel = settings.getSetting("normalhousebrightness")
+			else:
+				houselevel = "0"
+			if not isDuringBlackout("aisle"):
+				aislelevel = settings.getSetting("normalaislebrightness")
+			else:
+				aislelevel = "0"
+			if not isDuringBlackout("ambient"):
+				ambientlevel = settings.getSetting("normalambientbrightness")
+			else:
+				ambientlevel = "0"
 		elif (currentMode == MODE_PAUSED):
 			#change brightness for paused
-			if (settings.getSetting("controlhouselighting") == "true"):
-				if not isDuringBlackout("house"):
-					houselevel = settings.getSetting("pausehousebrightness")
-				else:
-					houselevel = "0"
-			if (settings.getSetting("controlaislelighting") == "true"):
-				if not isDuringBlackout("aisle"):
-					aislelevel = settings.getSetting("pauseaislebrightness")
-				else:
-					aislelevle = "0"
-			if (settings.getSetting("controlambientlighting") == "true"):
-				if not isDuringBlackout("ambient"):
-					ambientlevel = settings.getSetting("pauseambientbrightness")
-				else:
-					ambientlevel = "0"
+			if not isDuringBlackout("house"):
+				houselevel = settings.getSetting("pausehousebrightness")
+			else:
+				houselevel = "0"
+			if not isDuringBlackout("aisle"):
+				aislelevel = settings.getSetting("pauseaislebrightness")
+			else:
+				aislelevle = "0"
+			if not isDuringBlackout("ambient"):
+				ambientlevel = settings.getSetting("pauseambientbrightness")
+			else:
+				ambientlevel = "0"
 		elif (currentMode == MODE_PLAYING):
 			#change brightness for playing
-			if (settings.getSetting("controlhouselighting") == "true"):
-				if not isDuringBlackout("house"):
-					houselevel = settings.getSetting("playhousebrightness")
-				else:
-					houselevel = "0"
-			if (settings.getSetting("controlaislelighting") == "true"):
-				if not isDuringBlackout("aisle"):
-					aislelevel = settings.getSetting("playaislebrightness")
-				else:
-					aislelevle = "0"
-			if (settings.getSetting("controlambientlighting") == "true"):
-				if not isDuringBlackout("ambient"):
-					ambientlevel = settings.getSetting("playambientbrightness")
-				else:
-					ambientlevel = "0"
+			if not isDuringBlackout("house"):
+				houselevel = settings.getSetting("playhousebrightness")
+			else:
+				houselevel = "0"
+			if not isDuringBlackout("aisle"):
+				aislelevel = settings.getSetting("playaislebrightness")
+			else:
+				aislelevle = "0"
+			if not isDuringBlackout("ambient"):
+				ambientlevel = settings.getSetting("playambientbrightness")
+			else:
+				ambientlevel = "0"
 		elif (currentMode == MODE_SCREENSAVER):
 			#change brightness for screensaver... this shouldn't happen, since the screensaver should be off when settings are being changed
-			if (settings.getSetting("controlhouselighting") == "true"):
-				if not isDuringBlackout("house"):
-					houselevel = settings.getSetting("sshousebrightness")
-				else:
-					houselevel = "0"
-			if (settings.getSetting("controlaislelighting") == "true"):
-				if not isDuringBlackout("aisle"):
-					aislelevel = settings.getSetting("ssaislebrightness")
-				else:
-					aislelevle = "0"
-			if (settings.getSetting("controlambientlighting") == "true"):
-				if not isDuringBlackout("ambient"):
-					ambientlevel = settings.getSetting("ssambientbrightness")
-				else:
-					ambientlevel = "0"
-
-		setLights(settings.getSetting("houselightingchannel"), houselevel)
-		setLights(settings.getSetting("aislelightingchannel"), aislelevel)
-		setLights(settings.getSetting("ambientlightingchannel"), ambientlevel)
+			if not isDuringBlackout("house"):
+				houselevel = settings.getSetting("sshousebrightness")
+			else:
+				houselevel = "0"
+			if not isDuringBlackout("aisle"):
+				aislelevel = settings.getSetting("ssaislebrightness")
+			else:
+				aislelevle = "0"
+			if not isDuringBlackout("ambient"):
+				ambientlevel = settings.getSetting("ssambientbrightness")
+			else:
+				ambientlevel = "0"
+		if (settings.getSetting("controlhouselighting") == "true"):
+			setLights(settings.getSetting("houselightingchannel"), houselevel)
+		if (settings.getSetting("controlaislelighting") == "true"):
+			setLights(settings.getSetting("aislelightingchannel"), aislelevel)
+		if (settings.getSetting("controlambientlighting") == "true"):
+			setLights(settings.getSetting("ambientlightingchannel"), ambientlevel)
 
 	def onScreensaverActivated(self):
 		"""Called when the screen saver kicks in (from xbmc.Monitor)"""
@@ -535,6 +568,8 @@ if monitorhandler.start(): #Start the monitor handler and only continue if it su
 		while( True ): #Wait around for an abort signal from Kodi
 			if monitorhandler.waitForAbort(1):
 				break
+			if blackedOut != isDuringBlackout():
+				handleBlackOut()
 		playerhandler.stop()
 	monitorhandler.stop()
 	closePort()
