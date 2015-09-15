@@ -1,3 +1,5 @@
+v1.4.3
+	Fixed bug where lights would come up and fade if Kodi was started during the blackout period
 v1.4.2
 	Fixed bug where lights would stay up between playlist items
 v1.4.1

@@ -186,7 +186,7 @@ def handleBlackOut():
 
 def initLights():
 	"""Initialize lighting to the normal levels"""
-	global currentMode
+	global currentMode, blackedOut
 	#Base the current mode on what the player is doing
 	currentMode = getCurrentMode()
 	blackedOut = isDuringBlackout()
